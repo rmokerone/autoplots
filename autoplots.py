@@ -55,7 +55,7 @@ def compare_filename_and_path(d):
 # Progress: 4.167
 # 打印P盘进度
 def print_progress(line):
-    match = path_pattern.match(line)
+    match = progress_pattern.match(line)
     if match:
         (_progress,) = match.groups()
         print(line)
