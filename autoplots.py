@@ -9,8 +9,8 @@ from sys import argv
 
 DEBUG = True
 
-command = "./start.sh"
-target_dir = "/mnt"
+command = "./start.sh" # 运行时候的脚本
+target_dir = "/mnt"  # P好的文件要转移的位置
 filename_pattern = re.compile(r"Generating plot for k=(\d+) filename=(\S+) id=(\S+)")
 path_pattern = re.compile(r"Renamed final file from \"(\S+)\" to \"(\S+)\"")
 progress_pattern = re.compile(r"Progress: (\S+)")
