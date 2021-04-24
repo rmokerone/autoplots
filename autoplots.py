@@ -107,7 +107,7 @@ def run_once():
 
     final_endtime = datetime.datetime.now()
     # 打印生成文件名，以及最终消耗时间
-    print("finish %s ,cost time %s" % (info_dict.get('filename'), final_endtime-starttime)
+    print("finish %s ,cost time %s" % (info_dict.get('filename'), final_endtime-starttime))
 
 if __name__=="__main__":
     logging.basicConfig(filename='debug.log',format='%(message)s', level=logging.DEBUG)
