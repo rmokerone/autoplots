@@ -6,6 +6,7 @@ import subprocess
 import logging
 import shutil
 from sys import argv
+import datetime
 
 DEBUG = True
 
@@ -59,6 +60,8 @@ def print_progress(line):
     if match:
         (_progress,) = match.groups()
         print(line)
+
+# 打印本次消耗的时间
     
 # 移动文件到目标文件夹
 def move_file_to_target(d, target_dir):
@@ -71,7 +74,7 @@ def move_file_to_target(d, target_dir):
 
 # 运行一次程序
 def run_once():
-    logging.basicConfig(filename='debug.log',format='%(message)s', level=logging.DEBUG)
+    starttime = datetime.datetime.now()
 
     cmd = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
@@ -92,14 +95,22 @@ def run_once():
         # 打印进度
         print_progress(line)
 
+    # 打印P文件消耗的时间
+    plot_endtime = datetime.datetime.now()
+    print("Plot file cost time: %s" % (plot_endtime - starttime))
+
+    # TODO: 单独起一个线程进行文件的复制，不耽误P盘的时间
     if compare_filename_and_path(info_dict) and move_file_to_target(info_dict, target_dir):
         print("move file success!")
     else:
         print("move file failure!")
 
-    print("finish %s" % info_dict.get('filename'))
+    final_endtime = datetime.datetime.now()
+    # 打印生成文件名，以及最终消耗时间
+    print("finish %s ,cost time %s" % (info_dict.get('filename'), final_endtime-starttime)
 
 if __name__=="__main__":
+    logging.basicConfig(filename='debug.log',format='%(message)s', level=logging.DEBUG)
     if len(argv) != 2:
         print("help: ")
         print("python3 %s cycle_num" % argv[0])
