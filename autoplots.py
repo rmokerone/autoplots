@@ -7,6 +7,7 @@ import logging
 import shutil
 from sys import argv
 import datetime
+import threading
 
 DEBUG = True
 
@@ -15,6 +16,9 @@ target_dir = "/mnt"  # P好的文件要转移的位置
 filename_pattern = re.compile(r"Generating plot for k=(\d+) filename=(\S+) id=(\S+)")
 path_pattern = re.compile(r"Renamed final file from \"(\S+)\" to \"(\S+)\"")
 progress_pattern = re.compile(r"Progress: (\S+)")
+
+# move 线程的ID
+move_tid = None
 
 # 获取这次运行过程中产生的k,filename,id
 # Generating plot for k=32 filename=plot-k32-2021-04-12-22-58-e4f43122a8739f2377d043369ce018e09ef7e3b817340a246c1fa8e585a4d435.plot id=0xe4f43122a8739f2377d043369ce018e09ef7e3b817340a246c1fa8e585a4d435
@@ -64,11 +68,11 @@ def print_progress(line):
 # 打印本次消耗的时间
     
 # 移动文件到目标文件夹
-def move_file_to_target(d, target_dir):
-    finalpath = d.get('finalpath')
+def move_file_to_target(finalpath, target_dir):
     if finalpath == None:
         return False 
     shutil.move(finalpath, target_dir)
+    print("move file success!")
     return True
 
 
@@ -99,9 +103,12 @@ def run_once():
     plot_endtime = datetime.datetime.now()
     print("Plot file cost time: %s" % (plot_endtime - starttime))
 
-    # TODO: 单独起一个线程进行文件的复制，不耽误P盘的时间
-    if compare_filename_and_path(info_dict) and move_file_to_target(info_dict, target_dir):
-        print("move file success!")
+    # 单独起一个线程进行文件的复制，不耽误P盘的时间
+    if compare_filename_and_path(info_dict):
+        # 创建线程
+        move_tid = threading.Thread(target=move_file_to_target, args=(info_dict.get('finalpath'), target_dir))
+        move_tid.start()
+        
     else:
         print("move file failure!")
 
@@ -118,3 +125,4 @@ if __name__=="__main__":
         for i in range(int(argv[1])):
             print("[+] IN CYCLE %d" % i)
             run_once()
+        move_tid.join()
