@@ -75,6 +75,27 @@ def move_file_to_target(finalpath, target_dir):
     print("move file success!")
     return True
 
+# 复制文件到目标文件夹
+def copy_file_to_target(finalpath, target_dir):
+    if finalpath == None:
+        return False 
+    try:
+        shutil.move(finalpath, target_dir)
+    except Exception as e:
+        print(e)
+        print("copy file failure! %s" % finalpath)
+        return False 
+    print("move file success!")
+    print("try to remove file")
+    try:
+        shutil.rmtree(finalpath)
+    except Exception as e:
+        print(e)
+        print("remove file failure!")
+        return False
+    print("remove file success!")
+    return True
+
 
 # 运行一次程序
 def run_once():
@@ -106,7 +127,7 @@ def run_once():
     # 单独起一个线程进行文件的复制，不耽误P盘的时间
     if compare_filename_and_path(info_dict):
         # 创建线程
-        move_tid = threading.Thread(target=move_file_to_target, args=(info_dict.get('finalpath'), target_dir))
+        move_tid = threading.Thread(target=copy_file_to_target, args=(info_dict.get('finalpath'), target_dir))
         move_tid.start()
         
     else:
